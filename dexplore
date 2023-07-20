@@ -1,0 +1,42 @@
+#!/bin/bash
+#Explore web indexes from terminal.
+
+#CHECKING FOR DEPEDENCIES
+printf "Checking dependencies.... "
+array=( "mpv" "curl" "fzf" )
+for i in "${array[@]}"
+do
+    [[ $(command -v "$i" 2>/dev/null) ]] || { echo -en "\n$i needs to be installed.";deps=1; }
+done
+[[ $deps -ne 1 ]] && echo "OK" || { echo -en "\nInstall dependencies for 100x better luck.\n";exit 1; }
+
+
+printf "Enter web directory URL: "
+read url
+
+function fetch () {
+
+    #fetching directories from url to open in fzf
+    link="$(echo "$(curl -s "$url")" | grep -o 'href..*'| cut -d\" -f2 | awk NF)"
+    x="$(urldecode "$link")"
+    i="$(echo "$x" | fzf)"
+
+    #takes link from fzf and attaches to url --> so now we can "curl url/link"
+    url="${url}${i}"
+    echo "Opening.... $url"
+    case "$url" in
+        *mp4|*mkv|*avi|*flac)
+           echo "playing $url"
+           setsid -f mpv --fs "$url" > /dev/null 2>&1 ;;
+        */)
+        #recursion FTW!!
+           fetch
+    esac
+
+}
+
+#make responses readable.
+function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
+
+fetch
+
