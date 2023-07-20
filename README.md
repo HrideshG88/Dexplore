@@ -1,2 +1,2 @@
 # Dexplore
-Explore web indexes from terminal.
+Explore web directories from terminal.
