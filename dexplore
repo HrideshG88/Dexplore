@@ -1,10 +1,10 @@
 #!/bin/bash
-#Explore web indexes from terminal.
+echo "Explore web directories from terminal."
 
 #CHECKING FOR DEPEDENCIES
 printf "Checking dependencies.... "
-array=( "mpv" "curl" "fzf" )
-for i in "${array[@]}"
+dependencies=( "mpv" "curl" "fzf" "grep" "sed" "awk" )
+for i in "${dependencies[@]}"
 do
     [[ $(command -v "$i" 2>/dev/null) ]] || { echo -en "\n$i needs to be installed.";deps=1; }
 done
@@ -14,22 +14,26 @@ done
 printf "Enter web directory URL: "
 read url
 
+#check if url ends in "/"
+url="$(echo "$url" | sed '/\/$/! s|$|/|' )"
+
 function fetch () {
 
     #fetching directories from url to open in fzf
-    link="$(echo "$(curl -s "$url")" | grep -o 'href..*'| cut -d\" -f2 | awk NF)"
-    x="$(urldecode "$link")"
-    i="$(echo "$x" | fzf)"
+    link="$(echo "$(curl -s "$url")" | grep -o 'href..*'|  grep -v 'href..*?'| cut -d\" -f2 | awk NF)"
+    link="$(urldecode "$link")"
+    i="$(echo "$link" | fzf)"
 
-    #takes link from fzf and attaches to url --> so now we can "curl url/link"
+    #takes link from fzf and attaches to url"
     url="${url}${i}"
     echo "Opening.... $url"
     case "$url" in
         *mp4|*mkv|*avi|*flac)
            echo "playing $url"
-           setsid -f mpv --fs "$url" > /dev/null 2>&1 ;;
+           setsid -f nohup mpv "$url" > /dev/null 2>&1 ;;
         */)
-        #recursion FTW!!
+           #recursion FTW!!
+           url=`echo "$url" | sed "s/ /%20/g"`
            fetch
     esac
 
