@@ -30,7 +30,7 @@ function fetch () {
     case "$url" in
         *mp4|*mkv|*avi|*flac)
            echo "playing $url"
-           setsid -f nohup mpv "$url" > /dev/null 2>&1 ;;
+           setsid -f nohup mpv --fs "$url" > /dev/null 2>&1 ;;
         */)
            #recursion FTW!!
            url=`echo "$url" | sed "s/ /%20/g"`
