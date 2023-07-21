@@ -3,7 +3,7 @@ echo "Explore web directories from terminal."
 
 #CHECKING FOR DEPEDENCIES
 printf "Checking dependencies.... "
-dependencies=( "mpv" "curl" "fzf" "grep" "sed" "awk" )
+dependencies=( "mpv" "curl" "fzf" "grep" "sed" )
 for i in "${dependencies[@]}"
 do
     [[ $(command -v "$i" 2>/dev/null) ]] || { echo -en "\n$i needs to be installed.";deps=1; }
