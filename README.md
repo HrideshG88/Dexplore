@@ -12,7 +12,7 @@ Dexplore is a script to scrape and stream media from <strong>"index of /"</stron
 
 <h3 align=center>DEMO</h3>
 
-[dexplore.webm](https://github.com/HrideshG88/Dexplore/assets/37382537/e37b997d-9afe-497a-84a6-8413fe3c20df)
+[dexplorebrowser.webm](https://github.com/HrideshG88/Dexplore/assets/37382537/c714e94e-5b07-4887-8280-f41ed5829e8a)
 
 <h3 align=center>SETUP</h3>
 
