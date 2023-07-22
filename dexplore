@@ -20,7 +20,7 @@ url="$(echo "$url" | sed '/\/$/! s|$|/|' )"
 function fetch () {
 
     #fetching directories from url to open in fzf
-    link=$(curl -s "$url" | grep -Po "(?<=href=\")[^\"]*" | sed "/^?/d" )
+    link=$(curl -s "$url" | grep -Po "(?<=href=\")[^\?][^\"]*")
     link="$(urldecode "$link")"
     i="$(echo "$link" | fzf)"
 
@@ -43,4 +43,3 @@ function fetch () {
 function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 fetch
-
