@@ -4,42 +4,54 @@ echo "Explore web directories from terminal."
 #CHECKING FOR DEPEDENCIES
 printf "Checking dependencies.... "
 dependencies=( "mpv" "curl" "fzf" "grep" "sed" )
-for i in "${dependencies[@]}"
+for d in "${dependencies[@]}"
 do
-    [[ $(command -v "$i" 2>/dev/null) ]] || { echo -en "\n$i needs to be installed.";deps=1; }
+    [[ $(command -v "$d" 2>/dev/null) ]] || { echo -en "\n$d needs to be installed.";deps=1; }
 done
 [[ $deps -ne 1 ]] && echo "OK" || { echo -en "\nInstall dependencies for 100x better luck.\n";exit 1; }
 
-
-printf "Enter web directory URL: "
-read url
+if [ -z "$1" ]
+then
+  printf "Enter web directory URL: "
+  read url
+else
+  url=$1
+fi 
 
 #check if url ends in "/"
 url="$(echo "$url" | sed '/\/$/! s|$|/|' )"
+murl="$url"
+
+#make responses readable.
+function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 function fetch () {
 
     #fetching directories from url to open in fzf
     link=$(curl -s "$url" | grep -Po "(?<=href=\")[^\?][^\"]*")
+   
+    if [ -z "$link" ] 
+    then
+	    printf "Not Found!" 1>&2; exit 1
+    fi 
+
     link="$(urldecode "$link")"
     i="$(echo "$link" | fzf)"
 
     #takes link from fzf and attaches to url"
     url="${url}${i}"
-    echo "Opening.... $url"
+    echo "Opening.... $url"  
     case "$url" in
         *mp4|*mkv|*avi|*flac)
-           echo "playing $url"
+           echo "Playing $url"
+	   notify-send "Playing $url" 
            setsid -f nohup mpv --fs "$url" > /dev/null 2>&1 ;;
         */)
            #recursion FTW!!
-           url=`echo "$url" | sed "s/ /%20/g"`
+	   url="$(echo "$url" | sed "s/ /%20/g")"
            fetch
     esac
 
 }
-
-#make responses readable.
-function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 fetch
